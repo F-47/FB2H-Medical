@@ -13,7 +13,6 @@ function Footer({}: Props) {
             doctors.
           </p>
         </div>
-
         <div>
           <h3 className="text-white font-semibold mb-2">Quick Links</h3>
           <ul className="space-y-1">
@@ -39,7 +38,6 @@ function Footer({}: Props) {
             </li>
           </ul>
         </div>
-
         <div>
           <h3 className="text-white font-semibold mb-2">Contact</h3>
           <p className="text-gray-400">Email: support@fb2h.com</p>
