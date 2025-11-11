@@ -1,9 +1,15 @@
-import { logout } from "@/services/auth";
+import { getCurrentUser, logout } from "@/services/auth";
+import { useQuery } from "@tanstack/react-query";
 import { Calendar, Notebook, Pencil, User, LogOut } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 function DoctorLayout() {
   const location = useLocation();
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["profile"],
+    queryFn: getCurrentUser,
+  });
 
   const navItems = [
     {
@@ -38,15 +44,27 @@ function DoctorLayout() {
         <aside className="w-64 bg-primary text-white shadow-lg flex flex-col justify-between">
           <div>
             <div className="p-6 border-b border-blue-800">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-blue-400 flex items-center justify-center font-bold text-xl">
-                  DR
+              {isLoading ? (
+                <div className="animate-pulse flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-300" />
+                  <div className="h-3 w-20 bg-blue-300 rounded" />
                 </div>
-                <div>
-                  <h1 className="font-bold text-lg">Dr. Profile</h1>
-                  <p className="text-sm text-blue-200">Healthcare Portal</p>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarImage
+                      src={user?.image || ""}
+                      alt={user?.first_name}
+                    />
+                    <AvatarFallback className="text-black">
+                      {`${user?.first_name?.[0] || ""}${
+                        user?.last_name?.[0] || ""
+                      }`.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <h1 className="font-bold text-lg">Dr. {user?.first_name}</h1>
                 </div>
-              </div>
+              )}
             </div>
 
             <nav className="flex-1 p-4 space-y-2">
@@ -80,9 +98,17 @@ function DoctorLayout() {
             </button>
           </div>
         </aside>
+
         <section className="flex-1 overflow-auto">
           <div className="p-8">
-            <Outlet />
+            {isLoading ? (
+              <div className="animate-pulse space-y-4">
+                <div className="h-6 w-48 bg-blue-200 rounded" />
+                <div className="h-6 w-32 bg-blue-200 rounded" />
+              </div>
+            ) : (
+              <Outlet />
+            )}
           </div>
         </section>
       </div>

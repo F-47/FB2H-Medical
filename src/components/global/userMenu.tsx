@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentUser } from "@/services/auth";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router";
 
 function UserMenu() {
@@ -11,10 +10,8 @@ function UserMenu() {
     queryFn: getCurrentUser,
   });
 
-  if (isLoading || !user) return <Loader2 className="animate-spin w-4 h-4" />;
-
   const handleClick = () => {
-    switch (user.role) {
+    switch (user?.role) {
       case "doctor":
         navigate("/doctor/profile");
         break;
@@ -24,7 +21,11 @@ function UserMenu() {
     }
   };
 
-  return (
+  return isLoading || !user ? (
+    <div className="animate-pulse flex items-center gap-3">
+      <div className="w-8 h-8 rounded-full bg-blue-50" />
+    </div>
+  ) : (
     <button
       onClick={handleClick}
       className="flex items-center gap-2 cursor-pointer"

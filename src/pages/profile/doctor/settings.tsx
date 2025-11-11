@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,44 +16,90 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  updateDoctor,
+  getDoctorByToken,
+  type BaseDoctor,
+} from "@/services/doctors";
+import { toast } from "sonner";
+import { getToken } from "@/services/auth";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { MedicalSpecifications } from "@/constants";
 
 const doctorSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  specialty: z.string().min(1, "Specialty is required"),
-  bio: z.string().min(1, "Bio is required"),
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().min(1, "Last name is required"),
+  medical_spesification: z.string().optional(),
+  bio: z.string().optional(),
   email: z.email("Invalid email"),
   phone: z.string().min(1, "Phone is required"),
-  location: z.string().min(1, "Location is required"),
-  licenseNumber: z.string().min(1, "License number is required"),
-  yearsOfExperience: z
-    .number({ error: "Must be a number" })
-    .min(0, "Cannot be negative"),
-  languages: z.string().min(1, "Languages are required"),
+  address: z.string().optional(),
 });
 
 type DoctorFormValues = z.infer<typeof doctorSchema>;
 
-const defaultValues: DoctorFormValues = {
-  name: "Dr. Sarah Mitchell",
-  specialty: "Cardiology",
-  bio: "Board-certified cardiologist with 12+ years of clinical experience in preventive and interventional cardiology.",
-  email: "sarah.mitchell@medicalcenter.com",
-  phone: "+1 (555) 123-4567",
-  location: "Medical Center, Suite 302, San Francisco, CA",
-  licenseNumber: "MD-456789",
-  yearsOfExperience: 12,
-  languages: "English, Spanish",
-};
-
 export default function DoctorSettings() {
+  const queryClient = useQueryClient();
+  const token = getToken();
+
+  const { data: doctor, isLoading } = useQuery({
+    queryKey: ["doctor", token],
+    queryFn: () => getDoctorByToken(),
+  });
+
   const form = useForm<DoctorFormValues>({
     resolver: zodResolver(doctorSchema),
-    defaultValues,
+    defaultValues: {
+      first_name: doctor?.first_name ?? "",
+      last_name: doctor?.last_name ?? "",
+      medical_spesification: doctor?.medical_spesification ?? "",
+      bio: doctor?.bio ?? "",
+      email: doctor?.email,
+      phone: doctor?.phone_number ?? "",
+      address: doctor?.address ?? "",
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: (data: Partial<BaseDoctor>) => updateDoctor(data),
+    onSuccess: (updatedDoctor) => {
+      queryClient.setQueryData(["doctor"], updatedDoctor);
+      toast("Doctor updated successfully!");
+    },
+    onError: () => toast.error("Failed to update doctor"),
   });
 
   const onSubmit = (data: DoctorFormValues) => {
-    console.log(" Doctor info saved:", data);
+    console.log(data);
+
+    if (!doctor) return;
+
+    mutation.mutate(data);
   };
+
+  useEffect(() => {
+    if (doctor) {
+      form.reset({
+        first_name: doctor.first_name,
+        last_name: doctor.last_name,
+        medical_spesification: doctor.medical_spesification || "",
+        bio: doctor.bio || "",
+        email: doctor.email,
+        phone: doctor.phone_number || "",
+        address: doctor.address || "",
+      });
+    } else {
+      form.reset();
+    }
+  }, [doctor]);
+
+  if (isLoading) return <p>Loading doctor data...</p>;
 
   return (
     <div className="space-y-6">
@@ -66,10 +113,10 @@ export default function DoctorSettings() {
           <Card className="p-8 bg-white border border-blue-200 space-y-6">
             <FormField
               control={form.control}
-              name="name"
+              name="first_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>First Name</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -77,13 +124,12 @@ export default function DoctorSettings() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
-              name="specialty"
+              name="last_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Specialty</FormLabel>
+                  <FormLabel>Last Name</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -91,7 +137,30 @@ export default function DoctorSettings() {
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="medical_spesification"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Medical Specification</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Specialization" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-40">
+                        {MedicalSpecifications.values.map((spec) => (
+                          <SelectItem key={spec.code} value={spec.code}>
+                            {spec.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="bio"
@@ -99,13 +168,12 @@ export default function DoctorSettings() {
                 <FormItem>
                   <FormLabel>Bio</FormLabel>
                   <FormControl>
-                    <Textarea {...field} rows={4} />
+                    <Textarea className="resize-none" {...field} rows={4} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="email"
@@ -119,7 +187,6 @@ export default function DoctorSettings() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="phone"
@@ -133,59 +200,12 @@ export default function DoctorSettings() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
-              name="location"
+              name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="licenseNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>License Number</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="yearsOfExperience"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Years of Experience</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="languages"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Languages (comma separated)</FormLabel>
+                  <FormLabel>Address</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -197,8 +217,9 @@ export default function DoctorSettings() {
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={mutation.isPending}
             >
-              Save Changes
+              {mutation.isPending ? "Saving..." : "Save Changes"}
             </Button>
           </Card>
         </form>

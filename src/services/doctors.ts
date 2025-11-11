@@ -9,7 +9,7 @@ export type BaseDoctor = {
   image?: string | null;
   is_available?: boolean;
   last_name: string;
-  medical_spesification?: string[] | null;
+  medical_spesification?: string | null;
   phone_number?: string | null;
   role: "doctor" | "patient";
 };
@@ -33,7 +33,20 @@ export async function getDoctors(filters?: URLSearchParams) {
   return res.data;
 }
 
-export async function getDoctor(id: string) {
+export async function getDoctorById(id: string) {
   const res = await accountsAPI.get<GetDoctor>(`/doctors/${id}/`);
+  return res.data;
+}
+export async function getDoctorByToken() {
+  const res = await accountsAPI.get<GetDoctor>(`/doctors`, {
+    params: {
+      self: true,
+    },
+  });
+  return res.data;
+}
+
+export async function updateDoctor(data: Partial<BaseDoctor>) {
+  const res = await accountsAPI.patch<GetDoctor>(`/doctors/`, data);
   return res.data;
 }

@@ -1,28 +1,48 @@
 import { Card } from "@/components/ui/card";
-
-const mockDoctor = {
-  name: "Dr. Sarah Mitchell",
-  specialty: "Cardiology",
-  bio: "Board-certified cardiologist with 12+ years of clinical experience in preventive and interventional cardiology.",
-  email: "sarah.mitchell@medicalcenter.com",
-  phone: "+1 (555) 123-4567",
-  location: "Medical Center, Suite 302, San Francisco, CA",
-  licenseNumber: "MD-456789",
-  yearsOfExperience: 12,
-  languages: ["English", "Spanish"],
-};
+import { getToken } from "@/services/auth";
+import { getDoctorByToken } from "@/services/doctors";
+import { useQuery } from "@tanstack/react-query";
 
 export default function DoctorProfile() {
+  const token = getToken();
+
+  const { data: doctor, isLoading } = useQuery({
+    queryKey: ["doctor", token],
+    queryFn: () => getDoctorByToken(),
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-gray-600">Loading doctor profile...</p>
+      </div>
+    );
+  }
+
+  if (!doctor) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-red-500">Doctor data not found.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-4xl font-bold text-blue-900">{mockDoctor.name}</h1>
-        <p className="text-xl text-blue-600 mt-1">{mockDoctor.specialty}</p>
+        <h1 className="text-4xl font-bold text-blue-900">
+          {doctor.first_name}
+        </h1>
+        <p className="text-xl text-blue-600 mt-1">
+          {doctor.medical_spesification}
+        </p>
       </div>
 
       <Card className="p-6 bg-white border border-blue-200">
         <h2 className="text-lg font-semibold text-blue-900 mb-3">About</h2>
-        <p className="text-gray-700 leading-relaxed">{mockDoctor.bio}</p>
+        <p className="text-gray-700 leading-relaxed">
+          {doctor.bio || "No bio available."}
+        </p>
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -33,38 +53,16 @@ export default function DoctorProfile() {
           <div className="space-y-3">
             <div>
               <p className="text-sm text-gray-600">Email</p>
-              <p className="text-gray-900 font-medium">{mockDoctor.email}</p>
+              <p className="text-gray-900 font-medium">{doctor.email}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Phone</p>
-              <p className="text-gray-900 font-medium">{mockDoctor.phone}</p>
+              <p className="text-gray-900 font-medium">{doctor.phone_number}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Location</p>
-              <p className="text-gray-900 font-medium">{mockDoctor.location}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 bg-white border border-blue-200">
-          <h3 className="font-semibold text-blue-900 mb-4">Credentials</h3>
-          <div className="space-y-3">
-            <div>
-              <p className="text-sm text-gray-600">License Number</p>
               <p className="text-gray-900 font-medium">
-                {mockDoctor.licenseNumber}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Years of Experience</p>
-              <p className="text-gray-900 font-medium">
-                {mockDoctor.yearsOfExperience}+ years
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Languages</p>
-              <p className="text-gray-900 font-medium">
-                {mockDoctor.languages.join(", ")}
+                {doctor.address || "Not provided"}
               </p>
             </div>
           </div>

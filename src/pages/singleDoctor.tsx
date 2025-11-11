@@ -1,47 +1,68 @@
-import { getDoctor, type BaseDoctor } from "@/services/doctors";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Clock, Mail, MapPin, Phone } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { MedicalSpecifications } from "@/constants";
+import { getDoctorById } from "@/services/doctors";
+import { useQuery } from "@tanstack/react-query";
+import {
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
+import { useParams } from "react-router";
 
 type Props = {};
-const doctor: BaseDoctor = {
-  id: 1,
-  first_name: "Sarah",
-  last_name: "Mitchell",
-  email: "sarah.mitchell@healthcare.com",
-  phone_number: "+1 (555) 123-4567",
-  address: "123 Medical Center Drive, New York, NY 10001",
-  bio: "Experienced cardiologist with over 15 years of practice. Specializing in preventive cardiology and heart disease management.",
-  medical_spesification: ["Cardiology", "Internal Medicine", "Preventive Care"],
-  image: "/professional-female-doctor-headshot.png",
-  is_available: true,
-  role: "doctor",
-};
-
-const details = [
-  {
-    label: "Email",
-    value: doctor.email,
-    icon: Mail,
-  },
-  {
-    label: "Phone",
-    value: doctor.phone_number || "Not provided",
-    icon: Phone,
-  },
-  {
-    label: "Address",
-    value: doctor.address || "Not provided",
-    icon: MapPin,
-  },
-];
 
 function SingleDoctor({}: Props) {
   const id = useParams().id;
+  const {
+    data: doctor,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["doctor", id],
+    queryFn: () => getDoctorById(id!),
+    enabled: !!id,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="pt-16 mx-auto flex justify-center items-center h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+  if (isError || !doctor) {
+    return (
+      <div className="pt-16 mx-auto text-center text-red-600">
+        Failed to load doctor information. Please try again later.
+      </div>
+    );
+  }
+  const doctorDetails = [
+    {
+      label: "Email",
+      value: doctor?.email,
+      icon: Mail,
+    },
+    {
+      label: "Phone",
+      value: doctor?.phone_number,
+      icon: Phone,
+    },
+    {
+      label: "Address",
+      value: doctor?.address,
+      icon: MapPin,
+    },
+  ];
+
+  const specCode = doctor.medical_spesification;
+  const specLabel =
+    MedicalSpecifications.values.find((spec) => spec.code === specCode)
+      ?.label || "General";
 
   return (
     <div className="pt-16 mx-auto flex flex-col space-y-5">
@@ -60,9 +81,9 @@ function SingleDoctor({}: Props) {
             }`.toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <div className="flex-1 text-center md:text-start space-y-5">
+        <div className="flex-1 text-center md:text-start space-y-4">
           <div className="flex md:flex-row flex-col items-center justify-between">
-            <h1 className="text-4xl md:text-5xl font-bold mb-2">
+            <h1 className="text-4xl md:text-5xl font-bold">
               {doctor.first_name} {doctor.last_name}
             </h1>
             <div className="flex items-center gap-3">
@@ -87,24 +108,11 @@ function SingleDoctor({}: Props) {
               )}
             </div>
           </div>
-          <p className="text-xl text-primary">Medical Professional</p>
+          <p className="text-xl text-primary">{specLabel}</p>
           <p className="text-priamry text-lg leading-relaxed max-w-2xl">
-            Dedicated to providing comprehensive healthcare and personalized
-            medical care with a patient-first approach.
+            {doctor.bio ||
+              "No biography available for this doctor at the moment."}
           </p>
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-            {doctor.medical_spesification &&
-              doctor.medical_spesification.length > 0 &&
-              doctor.medical_spesification.map((spec) => (
-                <Badge
-                  key={spec}
-                  variant="secondary"
-                  className="px-4 py-2 text-sm"
-                >
-                  {spec}
-                </Badge>
-              ))}
-          </div>
         </div>
       </section>
       <section className="px-6 flex-1 bg-linear-to-b from-background to-muted/20">
@@ -112,7 +120,7 @@ function SingleDoctor({}: Props) {
           Information
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {details.map((detail) => {
+          {doctorDetails.map((detail) => {
             const Icon = detail.icon;
             return (
               <Card key={detail.label} className="border-l-4 border-l-blue-500">

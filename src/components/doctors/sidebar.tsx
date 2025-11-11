@@ -154,28 +154,30 @@ function DoctorsFilter({ searchParams, setSearchParams }: Props) {
             </div>
           </AccordionContent>
         </AccordionItem>
-        {Object.entries(MedicalSpecifications).map(([key, options], i) => (
-          <AccordionItem key={i} value={`item-${i}`}>
-            <AccordionTrigger>{options.label}</AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-3 text-sm text-gray-700">
-              <div className="flex flex-col gap-2">
-                {options.values.map((opt, index) => (
-                  <label
-                    key={index}
-                    className="cursor-pointer flex items-center gap-2"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={searchParams.getAll(key).includes(opt.code)}
-                      onChange={() => toggleMultiFilter(key, opt.code)}
-                    />
-                    {opt.label}
-                  </label>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
+        <AccordionItem value={`item-medical-specifications`}>
+          <AccordionTrigger>{MedicalSpecifications.label}</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-3 text-sm text-gray-700">
+            <div className="flex flex-col gap-2">
+              {MedicalSpecifications.values.map((opt, index) => (
+                <label
+                  key={index}
+                  className="cursor-pointer flex items-center gap-2"
+                >
+                  <input
+                    type="checkbox"
+                    checked={searchParams
+                      .getAll(MedicalSpecifications.key)
+                      .includes(opt.code)}
+                    onChange={() =>
+                      toggleMultiFilter(MedicalSpecifications.key, opt.code)
+                    }
+                  />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
     </aside>
   );
