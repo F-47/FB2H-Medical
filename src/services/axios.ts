@@ -17,3 +17,17 @@ accountsAPI.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   }
   return config;
 });
+
+accountsAPI.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+
+      if (typeof window !== "undefined") {
+        window.location.href = "/auth/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);

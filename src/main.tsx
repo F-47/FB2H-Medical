@@ -25,6 +25,7 @@ import Settings from "@/pages/profile/doctor/settings";
 import PatientLayout from "@/components/layouts/patientLayout";
 import PatientAppointments from "@/pages/profile/patient/appointments";
 import PatientSettings from "@/pages/profile/patient/settings";
+import ProtectedRoute from "./components/layouts/protectedRoute";
 
 let router = createBrowserRouter([
   {
@@ -47,22 +48,26 @@ let router = createBrowserRouter([
   },
 
   {
-    path: "/doctor",
-    element: <DoctorLayout />,
+    element: <ProtectedRoute />,
     children: [
-      { path: "profile", element: <DoctorProfile /> },
-      { path: "settings", element: <Settings /> },
-      { path: "availability", element: <AvailabilityScheduler /> },
-      { path: "appointments", element: <AppointmentsViewer /> },
-    ],
-  },
-
-  {
-    path: "/patient",
-    element: <PatientLayout />,
-    children: [
-      { path: "appointments", element: <PatientAppointments /> },
-      { path: "settings", element: <PatientSettings /> },
+      {
+        path: "/doctor",
+        element: <DoctorLayout />,
+        children: [
+          { path: "profile", element: <DoctorProfile /> },
+          { path: "settings", element: <Settings /> },
+          { path: "availability", element: <AvailabilityScheduler /> },
+          { path: "appointments", element: <AppointmentsViewer /> },
+        ],
+      },
+      {
+        path: "/patient",
+        element: <PatientLayout />,
+        children: [
+          { path: "appointments", element: <PatientAppointments /> },
+          { path: "settings", element: <PatientSettings /> },
+        ],
+      },
     ],
   },
 ]);

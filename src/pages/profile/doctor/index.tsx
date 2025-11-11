@@ -45,29 +45,27 @@ export default function DoctorProfile() {
         </p>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="p-6 bg-white border border-blue-200">
-          <h3 className="font-semibold text-blue-900 mb-4">
-            Contact Information
-          </h3>
-          <div className="space-y-3">
-            <div>
-              <p className="text-sm text-gray-600">Email</p>
-              <p className="text-gray-900 font-medium">{doctor.email}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Phone</p>
-              <p className="text-gray-900 font-medium">{doctor.phone_number}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Location</p>
-              <p className="text-gray-900 font-medium">
-                {doctor.address || "Not provided"}
-              </p>
-            </div>
+      <Card className="p-6 bg-white border border-blue-200">
+        <h3 className="font-semibold text-blue-900 mb-4">
+          Contact Information
+        </h3>
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm text-gray-600">Email</p>
+            <p className="text-gray-900 font-medium">{doctor.email}</p>
           </div>
-        </Card>
-      </div>
+          <div>
+            <p className="text-sm text-gray-600">Phone</p>
+            <p className="text-gray-900 font-medium">{doctor.phone_number}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Location</p>
+            <p className="text-gray-900 font-medium">
+              {doctor.address || "Not provided"}
+            </p>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }

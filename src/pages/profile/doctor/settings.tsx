@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -15,14 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  updateDoctor,
-  getDoctorByToken,
-  type BaseDoctor,
-} from "@/services/doctors";
-import { toast } from "sonner";
-import { getToken } from "@/services/auth";
 import {
   Select,
   SelectContent,
@@ -30,7 +22,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { MedicalSpecifications } from "@/constants";
+import { getToken } from "@/services/auth";
+import {
+  getDoctorByToken,
+  updateDoctor,
+  type BaseDoctor,
+} from "@/services/doctors";
+import { toast } from "sonner";
 
 const doctorSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -52,17 +52,16 @@ export default function DoctorSettings() {
     queryKey: ["doctor", token],
     queryFn: () => getDoctorByToken(),
   });
-
   const form = useForm<DoctorFormValues>({
     resolver: zodResolver(doctorSchema),
     defaultValues: {
-      first_name: doctor?.first_name ?? "",
-      last_name: doctor?.last_name ?? "",
-      medical_spesification: doctor?.medical_spesification ?? "",
-      bio: doctor?.bio ?? "",
-      email: doctor?.email,
-      phone: doctor?.phone_number ?? "",
-      address: doctor?.address ?? "",
+      first_name: "",
+      last_name: "",
+      medical_spesification: "",
+      bio: "",
+      email: "",
+      phone: "",
+      address: "",
     },
   });
 
@@ -76,26 +75,19 @@ export default function DoctorSettings() {
   });
 
   const onSubmit = (data: DoctorFormValues) => {
-    console.log(data);
-
-    if (!doctor) return;
-
     mutation.mutate(data);
   };
-
   useEffect(() => {
     if (doctor) {
       form.reset({
-        first_name: doctor.first_name,
-        last_name: doctor.last_name,
-        medical_spesification: doctor.medical_spesification || "",
-        bio: doctor.bio || "",
-        email: doctor.email,
-        phone: doctor.phone_number || "",
-        address: doctor.address || "",
+        first_name: doctor.first_name ?? "",
+        last_name: doctor.last_name ?? "",
+        medical_spesification: doctor.medical_spesification ?? "",
+        bio: doctor.bio ?? "",
+        email: doctor.email ?? "",
+        phone: doctor.phone_number ?? "",
+        address: doctor.address ?? "",
       });
-    } else {
-      form.reset();
     }
   }, [doctor]);
 
@@ -107,7 +99,6 @@ export default function DoctorSettings() {
         <h1 className="text-3xl font-bold text-blue-900 mb-2">Settings</h1>
         <p className="text-gray-600">Update your professional information</p>
       </div>
-
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <Card className="p-8 bg-white border border-blue-200 space-y-6">
@@ -144,7 +135,14 @@ export default function DoctorSettings() {
                 <FormItem>
                   <FormLabel>Medical Specification</FormLabel>
                   <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select
+                      defaultValue={field.value ?? ""}
+                      value={field.value ?? ""}
+                      onValueChange={(val) => {
+                        field.onChange(val);
+                        form.setValue("medical_spesification", val);
+                      }}
+                    >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select Specialization" />
                       </SelectTrigger>
@@ -161,6 +159,7 @@ export default function DoctorSettings() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="bio"
@@ -217,7 +216,7 @@ export default function DoctorSettings() {
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              disabled={mutation.isPending}
+              disabled={mutation.isPending || !form.formState.isDirty}
             >
               {mutation.isPending ? "Saving..." : "Save Changes"}
             </Button>

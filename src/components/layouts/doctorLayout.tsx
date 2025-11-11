@@ -1,15 +1,21 @@
 import { getCurrentUser, logout } from "@/services/auth";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Notebook, Pencil, User, LogOut } from "lucide-react";
-import { Link, Outlet, useLocation } from "react-router";
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useEffect } from "react";
 
 function DoctorLayout() {
   const location = useLocation();
-  const { data: user, isLoading } = useQuery({
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["profile"],
     queryFn: getCurrentUser,
   });
+  const navigate = useNavigate();
 
   const navItems = [
     {
@@ -37,6 +43,12 @@ function DoctorLayout() {
       path: "/doctor/settings",
     },
   ];
+
+  useEffect(() => {
+    if (!isLoading && (!user || isError)) {
+      navigate("/");
+    }
+  }, [user, isLoading, isError, navigate]);
 
   return (
     <main className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100">

@@ -1,3 +1,4 @@
+import DoctorCalendar from "@/components/doctors/single/doctor-calendar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { MedicalSpecifications } from "@/constants";
@@ -65,57 +66,152 @@ function SingleDoctor({}: Props) {
       ?.label || "General";
 
   return (
-    <div className="pt-16 mx-auto flex flex-col space-y-5">
-      <section className="bg-linear-to-br from-blue-50 via-white to-blue-200 px-6 py-12 md:py-16 flex flex-col md:flex-row items-center gap-8">
-        <Avatar className="w-40 h-40 md:w-48 md:h-48 rounded-lg overflow-hidden">
-          <AvatarImage
-            src={
-              doctor.image ||
-              "/placeholder.svg?height=200&width=200&query=doctor"
-            }
-            alt={doctor.first_name}
-          />
-          <AvatarFallback className="text-2xl font-medium">
-            {`${doctor.first_name?.[0] || ""}${
-              doctor.last_name?.[0] || ""
-            }`.toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 text-center md:text-start space-y-4">
-          <div className="flex md:flex-row flex-col items-center justify-between">
-            <h1 className="text-4xl md:text-5xl font-bold">
-              {doctor.first_name} {doctor.last_name}
-            </h1>
-            <div className="flex items-center gap-3">
-              {doctor.is_available ? (
-                <>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
-                      Available for Consultations
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <Clock className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      Currently Unavailable
-                    </span>
-                  </div>
-                </>
-              )}
+    <div className="py-16 mx-auto flex flex-col space-y-5">
+      <section className="bg-linear-to-br  from-blue-50 via-white to-blue-200 px-6 py-12 md:py-16 ">
+        <div className="container mx-auto flex flex-col md:flex-row items-center gap-8">
+          <Avatar className="w-40 h-40 md:w-48 md:h-48 rounded-lg overflow-hidden">
+            <AvatarImage
+              src={
+                doctor.image ||
+                "/placeholder.svg?height=200&width=200&query=doctor"
+              }
+              alt={doctor.first_name}
+            />
+            <AvatarFallback className="text-2xl font-medium">
+              {`${doctor.first_name?.[0] || ""}${
+                doctor.last_name?.[0] || ""
+              }`.toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 text-center md:text-start space-y-4">
+            <div className="flex md:flex-row flex-col items-center justify-between">
+              <h1 className="text-4xl md:text-5xl font-bold">
+                {doctor.first_name} {doctor.last_name}
+              </h1>
+              <div className="flex items-center gap-3">
+                {doctor.is_available ? (
+                  <>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                      <span className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+                        Available for Consultations
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                      <Clock className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Currently Unavailable
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
+            <p className="text-xl text-primary">{specLabel}</p>
+            <p className="text-priamry text-lg leading-relaxed max-w-2xl">
+              {doctor.bio ||
+                "No biography available for this doctor at the moment."}
+            </p>
           </div>
-          <p className="text-xl text-primary">{specLabel}</p>
-          <p className="text-priamry text-lg leading-relaxed max-w-2xl">
-            {doctor.bio ||
-              "No biography available for this doctor at the moment."}
-          </p>
         </div>
       </section>
-      <section className="px-6 flex-1 bg-linear-to-b from-background to-muted/20">
+      <DoctorCalendar
+        doctor={{
+          schedule: [
+            {
+              id: 1,
+              day: "MON",
+              start_time: "09:30:00",
+              end_time: "17:00:00",
+              is_available: true,
+              min_session_duration: 40,
+              available_slots: [
+                "09:30:00",
+                "10:10:00",
+                "10:50:00",
+                "11:30:00",
+                "12:10:00",
+                "12:50:00",
+                "13:30:00",
+                "14:10:00",
+                "14:50:00",
+                "15:30:00",
+                "16:10:00",
+              ],
+            },
+            {
+              id: 2,
+              day: "TUE",
+              start_time: "09:30:00",
+              end_time: "17:00:00",
+              is_available: true,
+              min_session_duration: 40,
+              available_slots: [
+                "09:30:00",
+                "10:10:00",
+                "10:50:00",
+                "11:30:00",
+                "12:10:00",
+                "12:50:00",
+                "13:30:00",
+                "14:10:00",
+                "14:50:00",
+                "15:30:00",
+                "16:10:00",
+              ],
+            },
+            {
+              id: 3,
+              day: "WED",
+              start_time: "09:30:00",
+              end_time: "17:00:00",
+              is_available: false,
+              min_session_duration: 40,
+              available_slots: [],
+            },
+            {
+              id: 4,
+              day: "THU",
+              start_time: "09:30:00",
+              end_time: "17:00:00",
+              is_available: true,
+              min_session_duration: 40,
+              available_slots: ["09:30:00", "10:10:00", "10:50:00", "11:30:00"],
+            },
+            {
+              id: 5,
+              day: "FRI",
+              start_time: "09:30:00",
+              end_time: "12:00:00",
+              is_available: true,
+              min_session_duration: 40,
+              available_slots: ["09:30:00", "10:10:00", "10:50:00", "11:30:00"],
+            },
+            {
+              id: 6,
+              day: "SAT",
+              start_time: "10:00:00",
+              end_time: "14:00:00",
+              is_available: true,
+              min_session_duration: 40,
+              available_slots: ["10:00:00", "10:40:00", "11:20:00", "12:00:00"],
+            },
+            {
+              id: 7,
+              day: "SUN",
+              start_time: "09:00:00",
+              end_time: "13:00:00",
+              is_available: false,
+              min_session_duration: 40,
+              available_slots: [],
+            },
+          ],
+        }}
+      />
+      <section className="flex-1 container mx-auto bg-linear-to-b from-background to-muted/20">
         <h2 className="text-2xl font-semibold text-foreground mb-6">
           Information
         </h2>
