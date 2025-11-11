@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { getToken, logout } from "@/services/auth";
 import { Menu } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router";
 import Logo from "./logo";
-import { getAuth, logout } from "@/services/auth";
 
 type Props = {};
 
 function Header({}: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const auth = getAuth();
+  const auth = getToken();
 
   return (
     <header className="border-b border-gray-200 bg-white fixed w-full z-50">
@@ -37,13 +37,15 @@ function Header({}: Props) {
           </Link>
 
           {auth ? (
-            <Button
-              variant="secondary"
-              onClick={() => logout()}
-              className="ml-4"
-            >
-              Logout
-            </Button>
+            <div className="flex items-center gap-x-2">
+              <Button
+                variant="secondary"
+                onClick={() => logout()}
+                className="ml-4"
+              >
+                Logout
+              </Button>
+            </div>
           ) : (
             <Button asChild className="ml-4">
               <Link to="/auth/login">Login</Link>

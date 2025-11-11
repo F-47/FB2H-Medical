@@ -28,7 +28,7 @@ export type LoginData = {
 
 export type LoginResponse = {
   access: string;
-  role: "patient" | "doctor";
+  role: "patient" | "doctor" | "admin";
 };
 
 export async function login(data: LoginData): Promise<LoginResponse> {
@@ -44,21 +44,32 @@ export function setAuth(auth: AuthData) {
   }
 }
 
-export function getAuth(): AuthData | null {
+export type UserProfile = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: "patient" | "doctor" | "admin";
+  avatar?: string;
+};
+
+export async function getCurrentUser(): Promise<UserProfile> {
+  const res = await accountsAPI.get("/me/");
+  return res.data;
+}
+
+export function getToken(): string | null {
   if (typeof window === "undefined") return null;
+
   const data = localStorage.getItem("token");
   if (!data) return null;
 
   try {
-    return JSON.parse(data) as AuthData;
+    const parsed = JSON.parse(data);
+    return parsed.access ?? null;
   } catch {
     localStorage.removeItem("token");
     return null;
   }
-}
-
-export function getToken(): string | null {
-  return getAuth()?.access ?? null;
 }
 
 export function logout() {

@@ -16,6 +16,9 @@ import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
 import { Toaster } from "./components/ui/sonner";
 
+// Dashboards
+import DoctorProfile from "./pages/profile/doctor";
+
 let router = createBrowserRouter([
   {
     path: "/",
@@ -24,7 +27,6 @@ let router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "doctors", element: <Doctors /> },
       { path: "doctors/:id", element: <SingleDoctor /> },
-      // { path: "profile/patient", element: <PatientProfile /> },
       // { path: "profile/doctor", element: <DoctorProfile /> },
     ],
   },
@@ -36,6 +38,7 @@ let router = createBrowserRouter([
       { path: "register", element: <Register /> },
     ],
   },
+  { path: "doctors/profile", element: <DoctorProfile /> },
 ]);
 
 const queryClient = new QueryClient();
