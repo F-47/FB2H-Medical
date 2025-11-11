@@ -5,10 +5,9 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import Logo from "./logo";
+import UserMenu from "./userMenu";
 
-type Props = {};
-
-function Header({}: Props) {
+function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const auth = getToken();
 
@@ -16,7 +15,7 @@ function Header({}: Props) {
     <header className="border-b border-gray-200 bg-white fixed w-full z-50">
       <div className="container mx-auto flex items-center justify-between py-4 px-4 md:px-0">
         <Logo />
-        <nav className="hidden md:flex items-center gap-6 ml-auto">
+        <nav className="hidden md:flex items-center gap-6 ms-auto">
           <Link
             to="/#features"
             className="text-gray-700 hover:text-gray-900 transition"
@@ -37,21 +36,14 @@ function Header({}: Props) {
           </Link>
 
           {auth ? (
-            <div className="flex items-center gap-x-2">
-              <Button
-                variant="secondary"
-                onClick={() => logout()}
-                className="ml-4"
-              >
-                Logout
-              </Button>
-            </div>
+            <UserMenu />
           ) : (
-            <Button asChild className="ml-4">
+            <Button asChild className="ms-4">
               <Link to="/auth/login">Login</Link>
             </Button>
           )}
         </nav>
+
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger className="md:hidden">
             <Menu className="h-6 w-6 text-gray-900" />
@@ -80,11 +72,17 @@ function Header({}: Props) {
                 Browse Doctors
               </Link>
             </nav>
+
             <div className="mt-6 flex flex-col gap-3">
               {auth ? (
-                <Button variant="secondary" onClick={logout}>
-                  Logout
-                </Button>
+                <>
+                  <div onClick={() => setIsOpen(false)}>
+                    <UserMenu />
+                  </div>
+                  <Button variant="secondary" onClick={logout}>
+                    Logout
+                  </Button>
+                </>
               ) : (
                 <Button asChild>
                   <Link to="/auth/login" onClick={() => setIsOpen(false)}>

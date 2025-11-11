@@ -1,14 +1,17 @@
 import { accountsAPI } from "./axios";
 
 export type BaseDoctor = {
-  id: number;
-  first_name: string;
-  last_name: string;
+  address?: string | null;
+  bio?: string | null;
   email: string;
-  phone_number?: string;
-  address?: string;
+  first_name: string;
+  id: number;
+  image?: string | null;
   is_available?: boolean;
-  medical_specialization?: string[];
+  last_name: string;
+  medical_spesification?: string[] | null;
+  phone_number?: string | null;
+  role: "doctor" | "patient";
 };
 
 export type GetDoctor = BaseDoctor;

@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router";
 import Logo from "../global/logo";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function AuthLayout() {
   const location = useLocation();

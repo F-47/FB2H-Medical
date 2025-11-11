@@ -28,7 +28,7 @@ export type LoginData = {
 
 export type LoginResponse = {
   access: string;
-  role: "patient" | "doctor" | "admin";
+  role: "patient" | "doctor";
 };
 
 export async function login(data: LoginData): Promise<LoginResponse> {
@@ -45,15 +45,15 @@ export function setAuth(auth: AuthData) {
 }
 
 export type UserProfile = {
+  id: number;
   first_name: string;
   last_name: string;
-  email: string;
-  role: "patient" | "doctor" | "admin";
-  avatar?: string;
+  image: string;
+  role: "doctor" | "patient";
 };
 
 export async function getCurrentUser(): Promise<UserProfile> {
-  const res = await accountsAPI.get("/me/");
+  const res = await accountsAPI.get("/profile/");
   return res.data;
 }
 

@@ -8,20 +8,22 @@ type Props = {};
 
 function Doctors({}: Props) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const paramsObj = Object.fromEntries(searchParams.entries());
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["doctors", searchParams],
+    queryKey: ["doctors", paramsObj],
     queryFn: () => getDoctors(searchParams),
+    placeholderData: (previousData) => previousData,
   });
 
   return (
-    <div className="flex container mx-auto gap-6 relative pt-32">
+    <div className="flex container mx-auto gap-6 relative py-28">
       <DoctorsFilter
         searchParams={searchParams}
         setSearchParams={setSearchParams}
       />
 
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start gap-6">
         {isLoading && <p>Loading doctors...</p>}
         {isError && <p>Failed to fetch doctors.</p>}
         {data &&

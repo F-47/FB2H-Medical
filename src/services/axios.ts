@@ -1,11 +1,13 @@
-import { getToken, logout } from "./auth";
 import axios, { type InternalAxiosRequestConfig } from "axios";
-import { toast } from "sonner";
+import { getToken } from "./auth";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 export const accountsAPI = axios.create({
   baseURL: baseURL + "/accounts",
+});
+export const appointmentsAPI = axios.create({
+  baseURL: baseURL + "/appointments",
 });
 
 accountsAPI.interceptors.request.use((config: InternalAxiosRequestConfig) => {

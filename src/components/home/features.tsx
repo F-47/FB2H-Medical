@@ -1,5 +1,5 @@
 import { Clock, Users, Shield, CheckCircle } from "lucide-react";
-import { Card } from "../ui/card";
+import { Card } from "@/components/ui/card";
 
 type Props = {};
 
@@ -36,10 +36,10 @@ function Features({}: Props) {
           ].map((feature, i) => (
             <Card
               key={i}
-              className="p-6 border border-border hover:border-primary/30 transition"
+              className="p-6 border border-border hover:border-primary/30 transition gap-4"
             >
-              <feature.icon className="w-10 h-10 text-primary mb-4" />
-              <h3 className="font-bold text-lg mb-2 text-foreground">
+              <feature.icon className="w-10 h-10 text-primary" />
+              <h3 className="font-bold text-lg text-foreground">
                 {feature.title}
               </h3>
               <p className="text-muted-foreground text-sm">

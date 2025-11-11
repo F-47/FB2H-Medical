@@ -12,19 +12,12 @@ const mockDoctor = {
   languages: ["English", "Spanish"],
 };
 
-export default function Profile() {
+export default function DoctorProfile() {
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-4xl font-bold text-blue-900">
-            {mockDoctor.name}
-          </h1>
-          <p className="text-xl text-blue-600 mt-1">{mockDoctor.specialty}</p>
-        </div>
-        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-          <span className="text-5xl">👨‍⚕️</span>
-        </div>
+      <div>
+        <h1 className="text-4xl font-bold text-blue-900">{mockDoctor.name}</h1>
+        <p className="text-xl text-blue-600 mt-1">{mockDoctor.specialty}</p>
       </div>
 
       <Card className="p-6 bg-white border border-blue-200">
