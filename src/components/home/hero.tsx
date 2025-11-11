@@ -5,7 +5,7 @@ type Props = {};
 
 function Hero({}: Props) {
   return (
-    <section className="relative pt-32 pb-20 px-4 bg-linear-to-br from-blue-50 via-white to-blue-100 dark:from-blue-950 dark:via-gray-950 dark:to-blue-900">
+    <section className="relative pt-32 pb-20 px-4 bg-linear-to-br from-blue-50 via-white to-blue-100">
       <div className="max-w-6xl mx-auto text-center">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 text-balance">
           Find & Book Appointments with{" "}

@@ -95,7 +95,12 @@ function DoctorsFilter({ searchParams, setSearchParams }: Props) {
         )}
       </div>
 
-      <Accordion type="multiple" className="w-full">
+      <Accordion
+        type="single"
+        collapsible
+        defaultValue="item-name"
+        className="w-full"
+      >
         <AccordionItem value="item-name">
           <AccordionTrigger>Name</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-sm text-gray-700">

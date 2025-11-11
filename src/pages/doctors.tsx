@@ -3,6 +3,7 @@ import DoctorsFilter from "@/components/doctors/sidebar";
 import { getDoctors } from "@/services/doctors";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
+import { Loader2 } from "lucide-react";
 
 type Props = {};
 
@@ -13,7 +14,6 @@ function Doctors({}: Props) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["doctors", paramsObj],
     queryFn: () => getDoctors(searchParams),
-    placeholderData: (previousData) => previousData,
   });
 
   return (
@@ -24,10 +24,27 @@ function Doctors({}: Props) {
       />
 
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start gap-6">
-        {isLoading && <p>Loading doctors...</p>}
-        {isError && <p>Failed to fetch doctors.</p>}
-        {data &&
-          data.map((doctor) => <DoctorCard key={doctor.id} doctor={doctor} />)}
+        {isLoading && (
+          <div className="col-span-full flex justify-center items-center py-10">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          </div>
+        )}
+
+        {isError && (
+          <div className="col-span-full text-center text-red-600 py-10">
+            Failed to fetch doctors. Please try again later.
+          </div>
+        )}
+
+        {!isLoading && !isError && data?.length === 0 && (
+          <div className="col-span-full text-center text-gray-500 py-10">
+            No doctors found matching your criteria.
+          </div>
+        )}
+
+        {!isLoading &&
+          !isError &&
+          data?.map((doctor) => <DoctorCard key={doctor.id} doctor={doctor} />)}
       </div>
     </div>
   );

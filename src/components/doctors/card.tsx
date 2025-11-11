@@ -1,156 +1,84 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import type { GetDoctor } from "@/services/doctors";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { BaseDoctor } from "@/services/doctors";
+import { Mail, Phone } from "lucide-react";
+import { Link } from "react-router";
 
 interface DoctorCardProps {
-  doctor: GetDoctor;
-  compact?: boolean;
+  doctor: BaseDoctor;
 }
 
-export default function DoctorCard({
-  doctor,
-  compact = false,
-}: DoctorCardProps) {
+export default function DoctorCard({ doctor }: DoctorCardProps) {
   const fullName = `${doctor.first_name} ${doctor.last_name}`;
-  const specializations = doctor.medical_spesification || [];
+  const specialization = doctor.medical_spesification || "Not Specified";
 
-  if (compact) {
-    return (
-      <div className="flex items-center gap-3">
-        {doctor.image && (
-          <img
-            src={doctor.image || "/placeholder.svg"}
-            alt={fullName}
-            className="w-12 h-12 rounded-full object-cover"
-          />
-        )}
-        {!doctor.image && (
-          <div className="w-12 h-12 rounded-full bg-linear-to-br from-primary/30 to-primary/10 flex items-center justify-center">
-            <span className="text-sm font-semibold text-primary">
+  return (
+    <Card className="hover:shadow-sm transition-shadow w-full">
+      <CardContent className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4">
+        <Link
+          to={`/doctors/${doctor.id}`}
+          className="w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center"
+        >
+          {doctor.image ? (
+            <img
+              src={doctor.image}
+              alt={fullName}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-xl font-bold text-primary">
               {doctor.first_name[0]}
               {doctor.last_name[0]}
             </span>
-          </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-foreground truncate">
-            Dr. {fullName}
-          </p>
-          {specializations.length > 0 && (
-            <p className="text-sm text-muted-foreground truncate">
-              {specializations[0]}
-            </p>
           )}
-        </div>
-        {doctor.is_available !== undefined && (
-          <Badge
-            variant="secondary"
-            className={
-              doctor.is_available
-                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
-            }
-          >
-            {doctor.is_available ? "Available" : "Unavailable"}
-          </Badge>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="pt-6">
-        <div className="flex flex-col sm:flex-row gap-4">
-          {/* Doctor Image */}
-          <div className="shrink-0">
-            {doctor.image ? (
-              <img
-                src={doctor.image || "/placeholder.svg"}
-                alt={fullName}
-                className="w-20 h-20 rounded-lg object-cover"
-              />
-            ) : (
-              <div className="w-20 h-20 rounded-lg bg-linear-to-br from-primary/30 to-primary/10 flex items-center justify-center">
-                <span className="text-lg font-semibold text-primary">
-                  {doctor.first_name[0]}
-                  {doctor.last_name[0]}
-                </span>
-              </div>
+        </Link>
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-center mb-1">
+            <Link
+              to={`/doctors/${doctor.id}`}
+              className="hover:text-primary text-lg font-semibold truncate hover:underline"
+            >
+              {fullName}
+            </Link>
+            {doctor.is_available !== undefined && (
+              <Badge
+                variant="secondary"
+                className={cn(
+                  doctor.is_available
+                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                    : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+                )}
+              >
+                {doctor.is_available ? "Available" : "Unavailable"}
+              </Badge>
             )}
           </div>
 
-          {/* Doctor Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  Dr. {fullName}
-                </h3>
-                {/* {specializations && specializations.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {specializations.map((spec) => (
-                      <Badge key={spec} variant="secondary" className="text-xs">
-                        <Stethoscope className="w-3 h-3 mr-1" />
-                        {spec}
-                      </Badge>
-                    ))}
-                  </div>
-                )} */}
-              </div>
-              {doctor.is_available !== undefined && (
-                <Badge
-                  variant="secondary"
-                  className={
-                    doctor.is_available
-                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                      : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
-                  }
-                >
-                  {doctor.is_available ? "Available" : "Unavailable"}
-                </Badge>
-              )}
-            </div>
+          <p className="text-sm text-muted-foreground mb-2 ">
+            {specialization}
+          </p>
 
-            {/* Bio */}
-            {doctor.bio && (
-              <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                {doctor.bio}
-              </p>
+          <div className="flex flex-col sm:flex-row sm:gap-2 gap-1 text-sm text-muted-foreground items-start sm:items-center">
+            {doctor.email && (
+              <Link
+                to={`mailto:${doctor.email}`}
+                className="hover:text-blue-500"
+              >
+                {doctor.email}
+              </Link>
             )}
-
-            {/* Contact Info */}
-            <div className="space-y-1 text-sm text-muted-foreground">
-              {doctor.email && (
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  <a
-                    href={`mailto:${doctor.email}`}
-                    className="hover:text-primary"
-                  >
-                    {doctor.email}
-                  </a>
-                </div>
-              )}
-              {doctor.phone_number && (
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  <a
-                    href={`tel:${doctor.phone_number}`}
-                    className="hover:text-primary"
-                  >
-                    {doctor.phone_number}
-                  </a>
-                </div>
-              )}
-              {doctor.address && (
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  <span>{doctor.address}</span>
-                </div>
-              )}
-            </div>
+            {doctor.email && doctor.phone_number && (
+              <span className="hidden sm:inline mx-1">|</span>
+            )}
+            {doctor.phone_number && (
+              <Link
+                to={`tel:${doctor.phone_number}`}
+                className="hover:text-blue-500 "
+              >
+                {doctor.phone_number}
+              </Link>
+            )}
           </div>
         </div>
       </CardContent>

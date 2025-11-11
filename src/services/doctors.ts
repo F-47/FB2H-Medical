@@ -32,3 +32,8 @@ export async function getDoctors(filters?: URLSearchParams) {
   });
   return res.data;
 }
+
+export async function getDoctor(id: string) {
+  const res = await accountsAPI.get<GetDoctor>(`/doctors/${id}/`);
+  return res.data;
+}
