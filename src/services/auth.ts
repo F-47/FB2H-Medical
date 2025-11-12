@@ -5,14 +5,7 @@ export type BaseUser = {
   last_name: string;
   email: string;
   password: string;
-};
-
-export type Doctor = BaseUser & {
-  role: "doctor";
-};
-
-export type Patient = BaseUser & {
-  role: "patient";
+  role: "doctor" | "patient";
 };
 
 export async function register(data: BaseUser) {

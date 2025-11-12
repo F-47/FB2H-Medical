@@ -1,6 +1,3 @@
-"use client";
-
-import { useState, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -8,23 +5,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import type { TGetSchedule } from "@/services/doctors/schedules";
+import { useMemo, useState } from "react";
 import TimeSlotPicker from "./time-slot-picker";
 
-interface Schedule {
-  id: number;
-  day: string;
-  start_time: string;
-  end_time: string;
-  is_available: boolean;
-  min_session_duration: number;
-  available_slots: string[];
+interface Props {
+  doctor_id: number;
+  schedule: TGetSchedule[];
 }
 
-interface Doctor {
-  schedule: Schedule[];
-}
-
-export default function DoctorCalendar({ doctor }: { doctor: Doctor }) {
+export default function DoctorCalendar({ doctor_id, schedule }: Props) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -42,7 +32,7 @@ export default function DoctorCalendar({ doctor }: { doctor: Doctor }) {
 
   const getScheduleForDate = (date: Date) => {
     const dayCode = dayNames[date.getDay()];
-    return doctor.schedule.find((s) => s.day === dayCode);
+    return schedule.find((s) => s.day === dayCode);
   };
 
   const isPastDate = (date: Date) => {
@@ -110,7 +100,13 @@ export default function DoctorCalendar({ doctor }: { doctor: Doctor }) {
         </CardContent>
       </Card>
 
-      {selectedDate && <TimeSlotPicker doctor={doctor} date={selectedDate} />}
+      {selectedDate && (
+        <TimeSlotPicker
+          doctor_id={doctor_id}
+          schedule={schedule}
+          selectedDate={selectedDate}
+        />
+      )}
     </div>
   );
 }

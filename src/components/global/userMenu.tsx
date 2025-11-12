@@ -16,7 +16,7 @@ function UserMenu() {
         navigate("/doctor/profile");
         break;
       case "patient":
-        navigate("/patient/profile");
+        navigate("/patient/appointments");
         break;
     }
   };

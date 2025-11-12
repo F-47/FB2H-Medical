@@ -1,8 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { BaseDoctor } from "@/services/doctors";
-import { Mail, Phone } from "lucide-react";
+import type { BaseDoctor } from "@/services/doctors/doctors";
 import { Link } from "react-router";
 
 interface DoctorCardProps {
@@ -58,28 +57,6 @@ export default function DoctorCard({ doctor }: DoctorCardProps) {
           <p className="text-sm text-muted-foreground mb-2 ">
             {specialization}
           </p>
-
-          <div className="flex flex-col sm:flex-row sm:gap-2 gap-1 text-sm text-muted-foreground items-start sm:items-center">
-            {doctor.email && (
-              <Link
-                to={`mailto:${doctor.email}`}
-                className="hover:text-blue-500"
-              >
-                {doctor.email}
-              </Link>
-            )}
-            {doctor.email && doctor.phone_number && (
-              <span className="hidden sm:inline mx-1">|</span>
-            )}
-            {doctor.phone_number && (
-              <Link
-                to={`tel:${doctor.phone_number}`}
-                className="hover:text-blue-500 "
-              >
-                {doctor.phone_number}
-              </Link>
-            )}
-          </div>
         </div>
       </CardContent>
     </Card>

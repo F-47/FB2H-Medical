@@ -2,7 +2,8 @@ import DoctorCalendar from "@/components/doctors/single/doctor-calendar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { MedicalSpecifications } from "@/constants";
-import { getDoctorById } from "@/services/doctors";
+import { getDoctorById } from "@/services/doctors/doctors";
+import { getScheduleById } from "@/services/doctors/schedules";
 import { useQuery } from "@tanstack/react-query";
 import {
   CheckCircle2,
@@ -18,27 +19,43 @@ type Props = {};
 
 function SingleDoctor({}: Props) {
   const id = useParams().id;
+
   const {
     data: doctor,
-    isLoading,
-    isError,
+    isLoading: isDoctorLoading,
+    isError: isDoctorError,
+    error: doctorError,
   } = useQuery({
     queryKey: ["doctor", id],
     queryFn: () => getDoctorById(id!),
     enabled: !!id,
   });
 
-  if (isLoading) {
+  const {
+    data: schedule,
+    isLoading: isScheduleLoading,
+    isError: isScheduleError,
+    error: scheduleError,
+  } = useQuery({
+    queryKey: ["schedule", id],
+    queryFn: () => getScheduleById(id!),
+    enabled: !!id,
+  });
+
+  if (isDoctorLoading || isScheduleLoading) {
     return (
       <div className="pt-16 mx-auto flex justify-center items-center h-screen">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
-  if (isError || !doctor) {
+
+  if (isDoctorError || isScheduleError || !doctor) {
+    const message =
+      doctorError?.message || scheduleError?.message || "Failed to load data.";
     return (
       <div className="pt-16 mx-auto text-center text-red-600">
-        Failed to load doctor information. Please try again later.
+        {message} Please try again later.
       </div>
     );
   }
@@ -67,7 +84,7 @@ function SingleDoctor({}: Props) {
 
   return (
     <div className="py-16 mx-auto flex flex-col space-y-5">
-      <section className="bg-linear-to-br  from-blue-50 via-white to-blue-200 px-6 py-12 md:py-16 ">
+      <section className="bg-linear-to-br from-blue-50 via-white to-blue-200 px-6 py-12 md:py-16">
         <div className="container mx-auto flex flex-col md:flex-row items-center gap-8">
           <Avatar className="w-40 h-40 md:w-48 md:h-48 rounded-lg overflow-hidden">
             <AvatarImage
@@ -83,6 +100,7 @@ function SingleDoctor({}: Props) {
               }`.toUpperCase()}
             </AvatarFallback>
           </Avatar>
+
           <div className="flex-1 text-center md:text-start space-y-4">
             <div className="flex md:flex-row flex-col items-center justify-between">
               <h1 className="text-4xl md:text-5xl font-bold">
@@ -90,23 +108,19 @@ function SingleDoctor({}: Props) {
               </h1>
               <div className="flex items-center gap-3">
                 {doctor.is_available ? (
-                  <>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                      <span className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
-                        Available for Consultations
-                      </span>
-                    </div>
-                  </>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+                      Available for Consultations
+                    </span>
+                  </div>
                 ) : (
-                  <>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                      <Clock className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Currently Unavailable
-                      </span>
-                    </div>
-                  </>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <Clock className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      Currently Unavailable
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
@@ -118,99 +132,13 @@ function SingleDoctor({}: Props) {
           </div>
         </div>
       </section>
-      <DoctorCalendar
-        doctor={{
-          schedule: [
-            {
-              id: 1,
-              day: "MON",
-              start_time: "09:30:00",
-              end_time: "17:00:00",
-              is_available: true,
-              min_session_duration: 40,
-              available_slots: [
-                "09:30:00",
-                "10:10:00",
-                "10:50:00",
-                "11:30:00",
-                "12:10:00",
-                "12:50:00",
-                "13:30:00",
-                "14:10:00",
-                "14:50:00",
-                "15:30:00",
-                "16:10:00",
-              ],
-            },
-            {
-              id: 2,
-              day: "TUE",
-              start_time: "09:30:00",
-              end_time: "17:00:00",
-              is_available: true,
-              min_session_duration: 40,
-              available_slots: [
-                "09:30:00",
-                "10:10:00",
-                "10:50:00",
-                "11:30:00",
-                "12:10:00",
-                "12:50:00",
-                "13:30:00",
-                "14:10:00",
-                "14:50:00",
-                "15:30:00",
-                "16:10:00",
-              ],
-            },
-            {
-              id: 3,
-              day: "WED",
-              start_time: "09:30:00",
-              end_time: "17:00:00",
-              is_available: false,
-              min_session_duration: 40,
-              available_slots: [],
-            },
-            {
-              id: 4,
-              day: "THU",
-              start_time: "09:30:00",
-              end_time: "17:00:00",
-              is_available: true,
-              min_session_duration: 40,
-              available_slots: ["09:30:00", "10:10:00", "10:50:00", "11:30:00"],
-            },
-            {
-              id: 5,
-              day: "FRI",
-              start_time: "09:30:00",
-              end_time: "12:00:00",
-              is_available: true,
-              min_session_duration: 40,
-              available_slots: ["09:30:00", "10:10:00", "10:50:00", "11:30:00"],
-            },
-            {
-              id: 6,
-              day: "SAT",
-              start_time: "10:00:00",
-              end_time: "14:00:00",
-              is_available: true,
-              min_session_duration: 40,
-              available_slots: ["10:00:00", "10:40:00", "11:20:00", "12:00:00"],
-            },
-            {
-              id: 7,
-              day: "SUN",
-              start_time: "09:00:00",
-              end_time: "13:00:00",
-              is_available: false,
-              min_session_duration: 40,
-              available_slots: [],
-            },
-          ],
-        }}
-      />
+
+      {schedule && schedule.length > 0 ? (
+        <DoctorCalendar doctor_id={doctor.id} schedule={schedule} />
+      ) : (
+        <p className="text-center text-gray-500">No schedule available.</p>
+      )}
+
       <section className="flex-1 container mx-auto bg-linear-to-b from-background to-muted/20">
         <h2 className="text-2xl font-semibold text-foreground mb-6">
           Information
@@ -218,6 +146,8 @@ function SingleDoctor({}: Props) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {doctorDetails.map((detail) => {
             const Icon = detail.icon;
+            console.log(detail);
+
             return (
               <Card key={detail.label} className="border-l-4 border-l-blue-500">
                 <CardContent className="pt-6">
@@ -228,7 +158,9 @@ function SingleDoctor({}: Props) {
                         {detail.label}
                       </p>
                       <p className="text-foreground wrap-break-words">
-                        {detail.value}
+                        {detail.value !== "" && detail.value !== null
+                          ? detail.value
+                          : "Not Specified"}
                       </p>
                     </div>
                   </div>

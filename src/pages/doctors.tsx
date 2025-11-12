@@ -1,6 +1,6 @@
 import DoctorCard from "@/components/doctors/card";
 import DoctorsFilter from "@/components/doctors/sidebar";
-import { getDoctors } from "@/services/doctors";
+import { getDoctors } from "@/services/doctors/doctors";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 import { Loader2 } from "lucide-react";

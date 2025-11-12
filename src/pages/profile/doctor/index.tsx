@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { getToken } from "@/services/auth";
-import { getDoctorByToken } from "@/services/doctors";
+import { getDoctorByToken } from "@/services/doctors/doctors";
 import { useQuery } from "@tanstack/react-query";
 
 export default function DoctorProfile() {

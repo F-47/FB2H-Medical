@@ -1,4 +1,4 @@
-import { accountsAPI } from "./axios";
+import { accountsAPI } from "../axios";
 
 export type BaseDoctor = {
   address?: string | null;

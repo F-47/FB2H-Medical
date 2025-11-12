@@ -29,7 +29,7 @@ import {
   getDoctorByToken,
   updateDoctor,
   type BaseDoctor,
-} from "@/services/doctors";
+} from "@/services/doctors/doctors";
 import { toast } from "sonner";
 
 const doctorSchema = z.object({
