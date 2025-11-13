@@ -51,8 +51,8 @@ export default function PatientSettings() {
 
   const mutation = useMutation({
     mutationFn: (data: Partial<BasePatient>) => updatePatient(data),
-    onSuccess: (updatedPatient) => {
-      queryClient.setQueryData(["patient"], updatedPatient);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["patient"] });
       toast.success("Profile updated successfully!");
     },
     onError: () => toast.error("Failed to update profile"),
