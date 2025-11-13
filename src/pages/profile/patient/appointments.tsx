@@ -19,7 +19,7 @@ import {
 } from "@/services/patient/appointment";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { Calendar, Clock, Pin, Trash } from "lucide-react";
+import { Calendar, Clock, Pin } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
